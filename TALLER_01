@@ -1,0 +1,134 @@
+# Taller #1 – Base de Datos II
+
+**Autor:** Gil Ortiz  
+**Asignatura:** Base de Datos II  
+**Tema:** Cardinalidad, Normalización y Diagramas Entidad–Relación
+
+---
+
+## I. Cardinalidad
+
+### Problema 1: Estudiante – Materia
+
+- **Tipo de relación:** N:M  
+- **Cardinalidad:**  
+  - Un estudiante puede cursar varias materias.  
+  - Una materia puede tener varios estudiantes.
+- **Justificación:**  
+  - No es 1:1 porque un estudiante puede cursar más de una materia.  
+  - No es 1:N porque una materia no pertenece a un solo estudiante.
+
+---
+
+### Problema 2: Cliente – Pedido
+
+- **Relación:** 1:N  
+- **Participación:**  
+  - Pedido con participación total (dependiente de Cliente).
+
+---
+
+### Tipos de cardinalidad
+
+- 1:1  
+- 0:0  
+- N:M  
+- 1:N  
+- N:M  
+
+---
+
+## II. Normalización
+
+### Primera Forma Normal (1FN)
+
+- Atributos atómicos.  
+- Sin campos multivaluados.  
+- Clave primaria definida.
+
+---
+
+### Segunda Forma Normal (2FN)
+
+- Cumple 1FN.  
+- No existen dependencias parciales.
+
+---
+
+### Diferencia entre 1FN y 2FN
+
+- 1FN elimina atributos no atómicos.  
+- 2FN elimina dependencias parciales.
+
+---
+
+### Paso de 2FN a 3FN
+
+- Verificar que no existan dependencias transitivas.
+
+---
+
+## III. Diagramas Entidad–Relación
+
+### Cliente – Cuenta Bancaria
+
+Relación **1:N** entre Cliente y Cuenta Bancaria, implementada mediante clave foránea.
+
+![Cliente y Cuenta Bancaria](images/er_cliente_cuenta.png)
+
+---
+
+### Sistema de Inversiones
+
+- **Acción:** Entidad fuerte.  
+- **Cotización:** Entidad débil dependiente de Acción.
+
+---
+
+## IV. Problema 3 – Sistema de Citas Médicas
+
+### Entidades
+
+- Paciente  
+- Médico  
+- Cita  
+
+### Relaciones y Cardinalidad
+
+- Paciente 1:N Cita (participación total).  
+- Médico 1:N Cita (participación opcional).
+
+![Sistema de Citas Médicas](images/er_citas_medicas.png)
+
+---
+
+## V. Problema 4 – Sistema de Ventas en Línea
+
+### Entidades
+
+- Cliente  
+- Venta  
+- Producto  
+- Detalle_Venta  
+
+### Relaciones
+
+- Cliente 1:N Venta  
+- Venta N:M Producto  
+
+### Resolución de la relación N:M
+
+- Uso de la entidad intermedia **Detalle_Venta**.
+
+### Atributos dependientes
+
+- Cantidad  
+- Precio de venta  
+
+![Sistema de Ventas en Línea](images/er_tienda_online.png)
+
+---
+
+## 📌 Notas Finales
+
+Este repositorio contiene el desarrollo académico del Taller #1 de Base de Datos II, enfocado en cardinalidad, normalización y modelado entidad–relación para bases de datos relacionales.
