@@ -1,0 +1,331 @@
+CREATE DATABASE punto_ventas;
+USE punto_ventas;
+
+-- Tabla oficinas
+CREATE TABLE oficinas (
+    id_oficina VARCHAR(10) PRIMARY KEY,
+    ciudad VARCHAR(50) NOT NULL,
+    telefono VARCHAR(20),
+    direccion VARCHAR(100),
+    departamento VARCHAR(50),
+    pais VARCHAR(50),
+    codigoPostal VARCHAR(15),
+    continente VARCHAR(20),
+    tipo_oficina ENUM('Central','Regional','Sucursal') NOT NULL,
+    activa BOOLEAN NOT NULL DEFAULT TRUE,
+    codigo_unico VARCHAR(20) UNIQUE
+);
+
+-- Tabla empleados
+CREATE TABLE empleados (
+    documento INT PRIMARY KEY,
+    apellido VARCHAR(50) NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
+    extension VARCHAR(10),
+    email VARCHAR(100) UNIQUE,
+    id_oficina VARCHAR(10),
+    jefe INT,
+    cargo VARCHAR(50),
+    tipo_contrato ENUM('Tiempo Completo','Medio Tiempo','Temporal') NOT NULL,
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    codigo_empleado VARCHAR(20) UNIQUE,
+    FOREIGN KEY (id_oficina) REFERENCES oficinas(id_oficina),
+    FOREIGN KEY (jefe) REFERENCES empleados(documento)
+);
+
+-- Tabla clientes
+CREATE TABLE clientes (
+    id_cliente INT PRIMARY KEY AUTO_INCREMENT,
+    empresa VARCHAR(100),
+    apellido VARCHAR(50),
+    nombre VARCHAR(50),
+    telefono VARCHAR(20),
+    direccion VARCHAR(100),
+    ciudad VARCHAR(50),
+    departamento VARCHAR(50),
+    codigoPostal VARCHAR(15),
+    pais VARCHAR(50),
+    empleadoAtiende INT,
+    limiteCredito DECIMAL(10,2),
+    tipo_cliente ENUM('Minorista','Mayorista','Corporativo') NOT NULL,
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    email VARCHAR(100) UNIQUE,
+    FOREIGN KEY (empleadoAtiende) REFERENCES empleados(documento)
+);
+
+-- Tabla pagos
+CREATE TABLE pagos (
+    id_pago INT PRIMARY KEY AUTO_INCREMENT,
+    id_cliente INT,
+    numeroCheque VARCHAR(50),
+    fechaPago DATE,
+    totalPago DECIMAL(10,2),
+    metodo_pago ENUM('Efectivo','Tarjeta','Transferencia','Cheque') NOT NULL,
+    confirmado BOOLEAN NOT NULL DEFAULT TRUE,
+    referencia_pago VARCHAR(50) UNIQUE,
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+);
+
+-- Tabla ordenes
+CREATE TABLE ordenes (
+    id_orden INT PRIMARY KEY AUTO_INCREMENT,
+    fechaRecibido DATE,
+    fechaLimiteEntrega DATE,
+    fechaEntrega DATE,
+    estado VARCHAR(30),
+    observacion TEXT,
+    id_cliente INT,
+    prioridad ENUM('Alta','Media','Baja') NOT NULL,
+    enviada BOOLEAN NOT NULL DEFAULT FALSE,
+    codigo_orden VARCHAR(30) UNIQUE,
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+);
+
+-- Tabla lineasproductos
+CREATE TABLE lineasproductos (
+    id_lineaproducto INT PRIMARY KEY AUTO_INCREMENT,
+    nombreLinea VARCHAR(50),
+    textoDescripcion VARCHAR(4000),
+    htmlDescripcion VARCHAR(200),
+    imagen VARCHAR(200),
+    categoria ENUM('Electronica','Hogar','Industrial','Tecnologia') NOT NULL,
+    activa BOOLEAN NOT NULL DEFAULT TRUE,
+    codigo_linea VARCHAR(20) UNIQUE
+);
+
+-- Tabla productos
+CREATE TABLE productos (
+    id_producto VARCHAR(15) PRIMARY KEY,
+    nombreProducto VARCHAR(70),
+    id_lineaProducto INT,
+    escala VARCHAR(10),
+    cantidad INT,
+    precioVenta DECIMAL(10,2),
+    MSRP DECIMAL(10,2),
+    estado_producto ENUM('Disponible','Agotado','Descontinuado') NOT NULL,
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    codigo_barras VARCHAR(50) UNIQUE,
+    FOREIGN KEY (id_lineaProducto) REFERENCES lineasproductos(id_lineaproducto)
+);
+
+-- Tabla detallesordenes
+CREATE TABLE detallesordenes (
+    id_detalle INT PRIMARY KEY AUTO_INCREMENT,
+    id_orden INT,
+    id_producto VARCHAR(15),
+    cantidadPedida INT,
+    valorUnitario DECIMAL(10,2),
+    ordenEntrega INT,
+    tipo_descuento ENUM('Ninguno','Promocion','Cliente Frecuente') NOT NULL,
+    facturado BOOLEAN NOT NULL DEFAULT FALSE,
+    codigo_detalle VARCHAR(30) UNIQUE,
+    FOREIGN KEY (id_orden) REFERENCES ordenes(id_orden),
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+);
+
+-- Insertar datos en oficinas
+INSERT INTO oficinas VALUES
+('OF1','Panama','300-1001','Via Espana','Panama','Panama','0801','America','Central',TRUE,'OF-CEN-01'),
+('OF2','David','300-1002','Calle Central','Chiriqui','Panama','0802','America','Regional',TRUE,'OF-REG-02'),
+('OF3','Colon','300-1003','Zona Libre','Colon','Panama','0803','America','Sucursal',TRUE,'OF-SUC-03'),
+('OF4','Santiago','300-1004','Centro','Veraguas','Panama','0804','America','Regional',TRUE,'OF-REG-04'),
+('OF5','Chitre','300-1005','Avenida Herrera','Herrera','Panama','0805','America','Sucursal',TRUE,'OF-SUC-05'),
+('OF6','La Chorrera','300-1006','Costa Verde','Panama Oeste','Panama','0806','America','Sucursal',TRUE,'OF-SUC-06'),
+('OF7','Penonome','300-1007','Centro','Cocle','Panama','0807','America','Regional',TRUE,'OF-REG-07'),
+('OF8','Bocas','300-1008','Isla Colon','Bocas del Toro','Panama','0808','America','Sucursal',TRUE,'OF-SUC-08'),
+('OF9','Meteti','300-1009','Centro','Darien','Panama','0809','America','Sucursal',TRUE,'OF-SUC-09'),
+('OF10','Las Tablas','300-1010','Centro','Los Santos','Panama','0810','America','Sucursal',TRUE,'OF-SUC-10'),
+('OF11','Arraijan','300-1011','Nuevo Arraijan','Panama Oeste','Panama','0811','America','Regional',TRUE,'OF-REG-11'),
+('OF12','Aguadulce','300-1012','Centro','Cocle','Panama','0812','America','Sucursal',TRUE,'OF-SUC-12'),
+('OF13','Bugaba','300-1013','Centro','Chiriqui','Panama','0813','America','Sucursal',TRUE,'OF-SUC-13'),
+('OF14','Chepo','300-1014','Centro','Panama','Panama','0814','America','Sucursal',TRUE,'OF-SUC-14'),
+('OF15','Pacora','300-1015','Centro','Panama','Panama','0815','America','Sucursal',TRUE,'OF-SUC-15'),
+('OF16','Sona','300-1016','Centro','Veraguas','Panama','0816','America','Sucursal',TRUE,'OF-SUC-16'),
+('OF17','Puerto Armuelles','300-1017','Centro','Chiriqui','Panama','0817','America','Sucursal',TRUE,'OF-SUC-17'),
+('OF18','Changuinola','300-1018','Centro','Bocas del Toro','Panama','0818','America','Sucursal',TRUE,'OF-SUC-18'),
+('OF19','Anton','300-1019','Centro','Cocle','Panama','0819','America','Sucursal',TRUE,'OF-SUC-19'),
+('OF20','Capira','300-1020','Centro','Panama Oeste','Panama','0820','America','Sucursal',TRUE,'OF-SUC-20');
+
+-- Insertar datos en empleados
+INSERT INTO empleados VALUES
+(1001,'Gonzalez','Carlos','101','carlos@empresa.com','OF1',NULL,'Gerente','Tiempo Completo',TRUE,'EMP-001'),
+(1002,'Martinez','Ana','102','ana@empresa.com','OF2',1001,'Supervisor','Tiempo Completo',TRUE,'EMP-002'),
+(1003,'Rodriguez','Luis','103','luis@empresa.com','OF3',1001,'Vendedor','Tiempo Completo',TRUE,'EMP-003'),
+(1004,'Lopez','Maria','104','maria@empresa.com','OF4',1002,'Vendedor','Medio Tiempo',TRUE,'EMP-004'),
+(1005,'Perez','Jorge','105','jorge@empresa.com','OF5',1002,'Vendedor','Tiempo Completo',TRUE,'EMP-005'),
+(1006,'Sanchez','Laura','106','laura@empresa.com','OF6',1002,'Vendedor','Temporal',TRUE,'EMP-006'),
+(1007,'Diaz','Pedro','107','pedro@empresa.com','OF7',1002,'Vendedor','Tiempo Completo',TRUE,'EMP-007'),
+(1008,'Torres','Sofia','108','sofia@empresa.com','OF8',1002,'Vendedor','Tiempo Completo',TRUE,'EMP-008'),
+(1009,'Ramirez','Miguel','109','miguel@empresa.com','OF9',1002,'Vendedor','Tiempo Completo',TRUE,'EMP-009'),
+(1010,'Castro','Elena','110','elena@empresa.com','OF10',1002,'Vendedor','Tiempo Completo',TRUE,'EMP-010'),
+(1011,'Morales','Ricardo','111','ricardo@empresa.com','OF11',1001,'Supervisor','Tiempo Completo',TRUE,'EMP-011'),
+(1012,'Ortiz','Patricia','112','patricia@empresa.com','OF12',1011,'Vendedor','Tiempo Completo',TRUE,'EMP-012'),
+(1013,'Rios','Daniel','113','daniel@empresa.com','OF13',1011,'Vendedor','Tiempo Completo',TRUE,'EMP-013'),
+(1014,'Navarro','Lucia','114','lucia@empresa.com','OF14',1011,'Vendedor','Tiempo Completo',TRUE,'EMP-014'),
+(1015,'Herrera','Andres','115','andres@empresa.com','OF15',1011,'Vendedor','Tiempo Completo',TRUE,'EMP-015'),
+(1016,'Mendoza','Paola','116','paola@empresa.com','OF16',1011,'Vendedor','Tiempo Completo',TRUE,'EMP-016'),
+(1017,'Silva','Fernando','117','fernando@empresa.com','OF17',1011,'Vendedor','Tiempo Completo',TRUE,'EMP-017'),
+(1018,'Cruz','Valeria','118','valeria@empresa.com','OF18',1011,'Vendedor','Tiempo Completo',TRUE,'EMP-018'),
+(1019,'Vargas','Diego','119','diego@empresa.com','OF19',1011,'Vendedor','Tiempo Completo',TRUE,'EMP-019'),
+(1020,'Reyes','Camila','120','camila@empresa.com','OF20',1011,'Vendedor','Tiempo Completo',TRUE,'EMP-020');
+
+-- Insertar datos en lineasproductos
+INSERT INTO lineasproductos (id_lineaproducto, nombreLinea, textoDescripcion, htmlDescripcion, imagen, categoria, activa, codigo_linea)
+VALUES
+(1,'Electronica Consumo','Productos electronicos para hogar','<p>Electronica</p>','img1.jpg','Electronica',TRUE,'LIN-001'),
+(2,'Tecnologia Empresarial','Equipos para empresas','<p>Tecnologia</p>','img2.jpg','Tecnologia',TRUE,'LIN-002'),
+(3,'Hogar Inteligente','Automatizacion del hogar','<p>Hogar</p>','img3.jpg','Hogar',TRUE,'LIN-003'),
+(4,'Industrial Pesado','Maquinaria industrial','<p>Industrial</p>','img4.jpg','Industrial',TRUE,'LIN-004'),
+(5,'Accesorios Tech','Accesorios tecnologicos','<p>Accesorios</p>','img5.jpg','Tecnologia',TRUE,'LIN-005'),
+(6,'Audio Profesional','Sistemas de sonido','<p>Audio</p>','img6.jpg','Electronica',TRUE,'LIN-006'),
+(7,'Video Seguridad','Camaras y DVR','<p>Seguridad</p>','img7.jpg','Electronica',TRUE,'LIN-007'),
+(8,'Redes','Infraestructura de red','<p>Redes</p>','img8.jpg','Tecnologia',TRUE,'LIN-008'),
+(9,'Iluminacion','Iluminacion LED','<p>LED</p>','img9.jpg','Hogar',TRUE,'LIN-009'),
+(10,'Computacion','Computadoras y laptops','<p>PC</p>','img10.jpg','Tecnologia',TRUE,'LIN-010'),
+(11,'Servidores','Servidores empresariales','<p>Server</p>','img11.jpg','Tecnologia',TRUE,'LIN-011'),
+(12,'Telefonia','Telefonos IP','<p>IP</p>','img12.jpg','Tecnologia',TRUE,'LIN-012'),
+(13,'Climatizacion','Aires acondicionados','<p>AC</p>','img13.jpg','Hogar',TRUE,'LIN-013'),
+(14,'Robotica','Equipos roboticos','<p>Robot</p>','img14.jpg','Industrial',TRUE,'LIN-014'),
+(15,'Automotriz','Equipos para autos','<p>Auto</p>','img15.jpg','Industrial',TRUE,'LIN-015'),
+(16,'Gaming','Equipos gamer','<p>Gaming</p>','img16.jpg','Tecnologia',TRUE,'LIN-016'),
+(17,'Smart Devices','Dispositivos inteligentes','<p>Smart</p>','img17.jpg','Electronica',TRUE,'LIN-017'),
+(18,'Electrodomesticos','Linea blanca','<p>Blanca</p>','img18.jpg','Hogar',TRUE,'LIN-018'),
+(19,'Impresion','Impresoras','<p>Print</p>','img19.jpg','Tecnologia',TRUE,'LIN-019'),
+(20,'Paneles Solares','Energia renovable','<p>Solar</p>','img20.jpg','Industrial',TRUE,'LIN-020');
+
+-- Insertar datos en productos
+INSERT INTO productos (id_producto, nombreProducto, id_lineaProducto, escala, cantidad, precioVenta, MSRP, estado_producto, activo, codigo_barras)
+VALUES
+('P001','Laptop Empresarial',10,'1:1',50,850,950,'Disponible',TRUE,'BAR-001'),
+('P002','Servidor Rack',11,'1:1',20,2500,2800,'Disponible',TRUE,'BAR-002'),
+('P003','Router Corporativo',8,'1:1',40,300,350,'Disponible',TRUE,'BAR-003'),
+('P004','Camara Seguridad HD',7,'1:1',60,120,150,'Disponible',TRUE,'BAR-004'),
+('P005','Teclado Mecanico',16,'1:1',100,80,100,'Disponible',TRUE,'BAR-005'),
+('P006','Monitor 24"',10,'1:1',70,180,220,'Disponible',TRUE,'BAR-006'),
+('P007','Impresora Laser',19,'1:1',35,200,250,'Disponible',TRUE,'BAR-007'),
+('P008','Aire Acondicionado',13,'1:1',15,600,750,'Disponible',TRUE,'BAR-008'),
+('P009','Panel Solar 500W',20,'1:1',25,400,480,'Disponible',TRUE,'BAR-009'),
+('P010','Smart TV 50"',1,'1:1',45,500,650,'Disponible',TRUE,'BAR-010'),
+('P011','Mouse Gamer',16,'1:1',120,40,60,'Disponible',TRUE,'BAR-011'),
+('P012','Switch 24 Puertos',8,'1:1',30,220,280,'Disponible',TRUE,'BAR-012'),
+('P013','Telefono IP',12,'1:1',55,90,120,'Disponible',TRUE,'BAR-013'),
+('P014','Robot Industrial',14,'1:1',10,5000,6000,'Disponible',TRUE,'BAR-014'),
+('P015','Equipo Sonido Pro',6,'1:1',20,700,850,'Disponible',TRUE,'BAR-015'),
+('P016','Refrigeradora Smart',18,'1:1',18,900,1100,'Disponible',TRUE,'BAR-016'),
+('P017','Tablet Empresarial',2,'1:1',65,300,380,'Disponible',TRUE,'BAR-017'),
+('P018','Luminaria LED',9,'1:1',200,25,40,'Disponible',TRUE,'BAR-018'),
+('P019','Escaner Industrial',4,'1:1',12,1500,1700,'Disponible',TRUE,'BAR-019'),
+('P020','Control Acceso Biometrico',17,'1:1',28,350,420,'Disponible',TRUE,'BAR-020');
+
+-- Insertar datos en clientes
+INSERT INTO clientes (id_cliente, empresa, apellido, nombre, telefono, direccion, ciudad, departamento, codigoPostal, pais, empleadoAtiende, limiteCredito, tipo_cliente, activo, email)
+VALUES
+(1,'Tech Solutions SA','Perez','Alberto','6001-1001','Via Espana','Panama','Panama','0801','Panama',1002,5000,'Corporativo',TRUE,'cliente1@correo.com'),
+(2,'Global Corp','Santos','Maria','6001-1002','Zona Libre','Colon','Colon','0802','Panama',1003,8000,'Mayorista',TRUE,'cliente2@correo.com'),
+(3,'Innovatech','Lopez','Carlos','6001-1003','Centro','David','Chiriqui','0803','Panama',1004,3000,'Minorista',TRUE,'cliente3@correo.com'),
+(4,'Panama Digital','Gomez','Ana','6001-1004','Costa Verde','La Chorrera','Panama Oeste','0804','Panama',1005,4500,'Corporativo',TRUE,'cliente4@correo.com'),
+(5,'Hogar Plus','Rodriguez','Luis','6001-1005','Centro','Santiago','Veraguas','0805','Panama',1006,2000,'Minorista',TRUE,'cliente5@correo.com'),
+(6,'Industrial Group','Castro','Elena','6001-1006','Centro','Chitre','Herrera','0806','Panama',1007,12000,'Mayorista',TRUE,'cliente6@correo.com'),
+(7,'Smart Office','Torres','Miguel','6001-1007','Centro','Penonome','Cocle','0807','Panama',1008,3500,'Corporativo',TRUE,'cliente7@correo.com'),
+(8,'Solar Energy','Ramirez','Laura','6001-1008','Centro','Las Tablas','Los Santos','0808','Panama',1009,7000,'Mayorista',TRUE,'cliente8@correo.com'),
+(9,'Retail Panama','Diaz','Pedro','6001-1009','Centro','Bocas','Bocas del Toro','0809','Panama',1010,1500,'Minorista',TRUE,'cliente9@correo.com'),
+(10,'IT Services','Morales','Ricardo','6001-1010','Centro','Arraijan','Panama Oeste','0810','Panama',1011,6000,'Corporativo',TRUE,'cliente10@correo.com'),
+(11,'Red Networks','Ortiz','Patricia','6001-1011','Centro','Aguadulce','Cocle','0811','Panama',1012,4000,'Mayorista',TRUE,'cliente11@correo.com'),
+(12,'Gaming World','Navarro','Lucia','6001-1012','Centro','Bugaba','Chiriqui','0812','Panama',1013,2800,'Minorista',TRUE,'cliente12@correo.com'),
+(13,'Security Pro','Herrera','Andres','6001-1013','Centro','Chepo','Panama','0813','Panama',1014,5200,'Corporativo',TRUE,'cliente13@correo.com'),
+(14,'Energy Solutions','Silva','Fernando','6001-1014','Centro','Sona','Veraguas','0814','Panama',1015,11000,'Mayorista',TRUE,'cliente14@correo.com'),
+(15,'Distribuidora Central','Cruz','Valeria','6001-1015','Centro','Puerto Armuelles','Chiriqui','0815','Panama',1016,6500,'Mayorista',TRUE,'cliente15@correo.com'),
+(16,'Tech Retail','Vargas','Diego','6001-1016','Centro','Changuinola','Bocas del Toro','0816','Panama',1017,1800,'Minorista',TRUE,'cliente16@correo.com'),
+(17,'Oficinas Modernas','Reyes','Camila','6001-1017','Centro','Anton','Cocle','0817','Panama',1018,4700,'Corporativo',TRUE,'cliente17@correo.com'),
+(18,'Electro Panama','Jimenez','Raul','6001-1018','Centro','Capira','Panama Oeste','0818','Panama',1019,9000,'Mayorista',TRUE,'cliente18@correo.com'),
+(19,'Smart Home','Mendoza','Paola','6001-1019','Centro','Meteti','Darien','0819','Panama',1020,3200,'Minorista',TRUE,'cliente19@correo.com'),
+(20,'Business Tech','Flores','Javier','6001-1020','Centro','Panama','Panama','0820','Panama',1002,10000,'Corporativo',TRUE,'cliente20@correo.com');
+
+-- Insertar datos en ordenes
+INSERT INTO ordenes (id_orden, fechaRecibido, fechaLimiteEntrega, fechaEntrega, estado, observacion, id_cliente, prioridad, enviada, codigo_orden)
+VALUES
+(1,'2026-01-01','2026-01-10','2026-01-08','Entregado','Entrega exitosa',1,'Alta',TRUE,'ORD-001'),
+(2,'2026-01-02','2026-01-12','2026-01-11','Entregado','Sin novedades',2,'Media',TRUE,'ORD-002'),
+(3,'2026-01-03','2026-01-15',NULL,'Pendiente','En proceso',3,'Alta',FALSE,'ORD-003'),
+(4,'2026-01-04','2026-01-16',NULL,'Pendiente','Pendiente despacho',4,'Media',FALSE,'ORD-004'),
+(5,'2026-01-05','2026-01-18','2026-01-17','Entregado','OK',5,'Baja',TRUE,'ORD-005'),
+(6,'2026-01-06','2026-01-20',NULL,'Pendiente','Sin stock parcial',6,'Alta',FALSE,'ORD-006'),
+(7,'2026-01-07','2026-01-21','2026-01-20','Entregado','Correcto',7,'Media',TRUE,'ORD-007'),
+(8,'2026-01-08','2026-01-22',NULL,'Pendiente','En preparacion',8,'Alta',FALSE,'ORD-008'),
+(9,'2026-01-09','2026-01-23','2026-01-22','Entregado','Sin problemas',9,'Baja',TRUE,'ORD-009'),
+(10,'2026-01-10','2026-01-24',NULL,'Pendiente','En almacen',10,'Media',FALSE,'ORD-010'),
+(11,'2026-01-11','2026-01-25','2026-01-24','Entregado','OK',11,'Alta',TRUE,'ORD-011'),
+(12,'2026-01-12','2026-01-26',NULL,'Pendiente','En transito',12,'Media',FALSE,'ORD-012'),
+(13,'2026-01-13','2026-01-27','2026-01-26','Entregado','Completo',13,'Alta',TRUE,'ORD-013'),
+(14,'2026-01-14','2026-01-28',NULL,'Pendiente','Esperando pago',14,'Media',FALSE,'ORD-014'),
+(15,'2026-01-15','2026-01-29','2026-01-28','Entregado','OK',15,'Baja',TRUE,'ORD-015'),
+(16,'2026-01-16','2026-01-30',NULL,'Pendiente','En revision',16,'Alta',FALSE,'ORD-016'),
+(17,'2026-01-17','2026-01-31','2026-01-30','Entregado','Correcto',17,'Media',TRUE,'ORD-017'),
+(18,'2026-01-18','2026-02-01',NULL,'Pendiente','En despacho',18,'Alta',FALSE,'ORD-018'),
+(19,'2026-01-19','2026-02-02','2026-02-01','Entregado','OK',19,'Baja',TRUE,'ORD-019'),
+(20,'2026-01-20','2026-02-03',NULL,'Pendiente','Procesando',20,'Alta',FALSE,'ORD-020');
+
+-- Insertar datos en detallesordenes
+INSERT INTO detallesordenes (id_detalle, id_orden, id_producto, cantidadPedida, valorUnitario, ordenEntrega, tipo_descuento, facturado, codigo_detalle)
+VALUES
+(1,1,'P001',2,850,1,'Ninguno',TRUE,'DET-001'),
+(2,2,'P002',1,2500,1,'Promocion',TRUE,'DET-002'),
+(3,3,'P003',3,300,1,'Ninguno',FALSE,'DET-003'),
+(4,4,'P004',5,120,1,'Cliente Frecuente',FALSE,'DET-004'),
+(5,5,'P005',4,80,1,'Ninguno',TRUE,'DET-005'),
+(6,6,'P006',2,180,1,'Promocion',FALSE,'DET-006'),
+(7,7,'P007',1,200,1,'Ninguno',TRUE,'DET-007'),
+(8,8,'P008',1,600,1,'Cliente Frecuente',FALSE,'DET-008'),
+(9,9,'P009',3,400,1,'Ninguno',TRUE,'DET-009'),
+(10,10,'P010',2,500,1,'Promocion',FALSE,'DET-010'),
+(11,11,'P011',6,40,1,'Ninguno',TRUE,'DET-011'),
+(12,12,'P012',2,220,1,'Cliente Frecuente',FALSE,'DET-012'),
+(13,13,'P013',4,90,1,'Ninguno',TRUE,'DET-013'),
+(14,14,'P014',1,5000,1,'Promocion',FALSE,'DET-014'),
+(15,15,'P015',2,700,1,'Ninguno',TRUE,'DET-015'),
+(16,16,'P016',1,900,1,'Cliente Frecuente',FALSE,'DET-016'),
+(17,17,'P017',3,300,1,'Ninguno',TRUE,'DET-017'),
+(18,18,'P018',10,25,1,'Promocion',FALSE,'DET-018'),
+(19,19,'P019',1,1500,1,'Ninguno',TRUE,'DET-019'),
+(20,20,'P020',2,350,1,'Cliente Frecuente',FALSE,'DET-020');
+
+-- Insertar datos en pagos
+INSERT INTO pagos (id_pago, id_cliente, numeroCheque, fechaPago, totalPago, metodo_pago, confirmado, referencia_pago)
+VALUES
+(1,1,'CHK-001','2026-01-05',1700,'Transferencia',TRUE,'REF-001'),
+(2,2,'CHK-002','2026-01-06',2500,'Cheque',TRUE,'REF-002'),
+(3,3,'CHK-003','2026-01-07',900,'Efectivo',TRUE,'REF-003'),
+(4,4,'CHK-004','2026-01-08',600,'Tarjeta',TRUE,'REF-004'),
+(5,5,'CHK-005','2026-01-09',320,'Efectivo',TRUE,'REF-005'),
+(6,6,'CHK-006','2026-01-10',360,'Transferencia',TRUE,'REF-006'),
+(7,7,'CHK-007','2026-01-11',200,'Cheque',TRUE,'REF-007'),
+(8,8,'CHK-008','2026-01-12',600,'Tarjeta',TRUE,'REF-008'),
+(9,9,'CHK-009','2026-01-13',1200,'Efectivo',TRUE,'REF-009'),
+(10,10,'CHK-010','2026-01-14',1000,'Transferencia',TRUE,'REF-010'),
+(11,11,'CHK-011','2026-01-15',240,'Cheque',TRUE,'REF-011'),
+(12,12,'CHK-012','2026-01-16',440,'Tarjeta',TRUE,'REF-012'),
+(13,13,'CHK-013','2026-01-17',360,'Efectivo',TRUE,'REF-013'),
+(14,14,'CHK-014','2026-01-18',5000,'Transferencia',TRUE,'REF-014'),
+(15,15,'CHK-015','2026-01-19',1400,'Cheque',TRUE,'REF-015'),
+(16,16,'CHK-016','2026-01-20',900,'Tarjeta',TRUE,'REF-016'),
+(17,17,'CHK-017','2026-01-21',900,'Efectivo',TRUE,'REF-017'),
+(18,18,'CHK-018','2026-01-22',250,'Transferencia',TRUE,'REF-018'),
+(19,19,'CHK-019','2026-01-23',1500,'Cheque',TRUE,'REF-019'),
+(20,20,'CHK-020','2026-01-24',700,'Tarjeta',TRUE,'REF-020');
+
+-- Verificar las inserciones
+SELECT 'oficinas' AS tabla, COUNT(*) AS registros FROM oficinas
+UNION ALL
+SELECT 'empleados', COUNT(*) FROM empleados
+UNION ALL
+SELECT 'lineasproductos', COUNT(*) FROM lineasproductos
+UNION ALL
+SELECT 'productos', COUNT(*) FROM productos
+UNION ALL
+SELECT 'clientes', COUNT(*) FROM clientes
+UNION ALL
+SELECT 'ordenes', COUNT(*) FROM ordenes
+UNION ALL
+SELECT 'detallesordenes', COUNT(*) FROM detallesordenes
+UNION ALL
+SELECT 'pagos', COUNT(*) FROM pagos;

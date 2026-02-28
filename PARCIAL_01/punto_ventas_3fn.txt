@@ -1,0 +1,195 @@
+-- Crear la base de datos
+CREATE DATABASE IF NOT EXISTS punto_ventas_3fn;
+USE punto_ventas_3fn;
+
+-- Crear tabla clientes
+CREATE TABLE clientes (
+    id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    cedula VARCHAR(20) NOT NULL UNIQUE,
+    telefono VARCHAR(20) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    tipo_cliente ENUM('Regular','Premium','Mayorista') NOT NULL,
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    fecha_registro DATE NOT NULL,
+    CHECK (telefono <> '')
+);
+
+-- Crear tabla productos
+CREATE TABLE productos (
+    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    codigo_barra VARCHAR(50) NOT NULL UNIQUE,
+    precio DECIMAL(10,2) NOT NULL CHECK (precio > 0),
+    categoria ENUM('Electrnica','Alimentos','Ropa','Hogar') NOT NULL,
+    disponible BOOLEAN NOT NULL DEFAULT TRUE,
+    stock INT NOT NULL CHECK (stock >= 0),
+    descripcion VARCHAR(200)
+);
+
+-- Crear tabla ventas
+CREATE TABLE ventas (
+    id_venta INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    fecha DATETIME NOT NULL,
+    metodo_pago ENUM('Efectivo','Tarjeta','Transferencia') NOT NULL,
+    pagado BOOLEAN NOT NULL DEFAULT TRUE,
+    total DECIMAL(10,2) NOT NULL CHECK (total >= 0),
+    codigo_factura VARCHAR(50) NOT NULL UNIQUE,
+    
+    FOREIGN KEY (id_cliente)
+    REFERENCES clientes(id_cliente)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+);
+
+-- Crear tabla detalle_venta
+CREATE TABLE detalle_venta (
+    id_detalle INT AUTO_INCREMENT PRIMARY KEY,
+    id_venta INT NOT NULL,
+    id_producto INT NOT NULL,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    precio_unitario DECIMAL(10,2) NOT NULL CHECK (precio_unitario > 0),
+    subtotal DECIMAL(10,2) NOT NULL CHECK (subtotal >= 0),
+    aplica_descuento BOOLEAN NOT NULL DEFAULT FALSE,
+    tipo_descuento ENUM('Ninguno','Promocin','Cliente Frecuente') NOT NULL,
+    
+    UNIQUE (id_venta, id_producto),
+    
+    FOREIGN KEY (id_venta)
+    REFERENCES ventas(id_venta)
+    ON DELETE CASCADE,
+    
+    FOREIGN KEY (id_producto)
+    REFERENCES productos(id_producto)
+    ON DELETE RESTRICT
+);
+
+-- Mostrar tablas creadas
+SHOW TABLES;
+
+-- Insertar datos en clientes
+INSERT INTO clientes (nombre, cedula, telefono, email, tipo_cliente, activo, fecha_registro) VALUES
+('Carlos Mendoza','8-912-456','6001-1234','carlos@email.com','Regular',TRUE,'2025-01-10'),
+('Ana Rodrguez','8-845-332','6002-2234','ana@email.com','Premium',TRUE,'2025-01-12'),
+('Luis Gmez','8-700-111','6003-3234','luis@email.com','Mayorista',TRUE,'2025-01-15'),
+('Mara Lpez','8-999-888','6004-4234','maria@email.com','Regular',TRUE,'2025-01-18'),
+('Jos Herrera','8-777-222','6005-5234','jose@email.com','Premium',TRUE,'2025-01-20'),
+('Laura Snchez','8-654-333','6006-6234','laura@email.com','Regular',TRUE,'2025-01-22'),
+('Pedro Castillo','8-321-444','6007-7234','pedro@email.com','Mayorista',TRUE,'2025-01-25'),
+('Sofa Morales','8-111-555','6008-8234','sofia@email.com','Premium',TRUE,'2025-01-28'),
+('Ricardo Daz','8-222-666','6009-9234','ricardo@email.com','Regular',TRUE,'2025-02-01'),
+('Elena Torres','8-333-777','6010-0234','elena@email.com','Regular',TRUE,'2025-02-05'),
+('Miguel Castro','8-444-888','6011-1234','miguel@email.com','Premium',TRUE,'2025-02-07'),
+('Daniela Ruiz','8-555-999','6012-2234','daniela@email.com','Regular',TRUE,'2025-02-09'),
+('Andrs Vega','8-666-101','6013-3234','andres@email.com','Mayorista',TRUE,'2025-02-11'),
+('Camila Ortiz','8-777-202','6014-4234','camila@email.com','Premium',TRUE,'2025-02-13'),
+('Jorge Prez','8-888-303','6015-5234','jorge@email.com','Regular',TRUE,'2025-02-15'),
+('Natalia Cruz','8-999-404','6016-6234','natalia@email.com','Regular',TRUE,'2025-02-17'),
+('Fernando Silva','8-101-505','6017-7234','fernando@email.com','Mayorista',TRUE,'2025-02-19'),
+('Valeria Ramos','8-202-606','6018-8234','valeria@email.com','Premium',TRUE,'2025-02-21'),
+('Esteban Flores','8-303-707','6019-9234','esteban@email.com','Regular',TRUE,'2025-02-23'),
+('Paola Jimnez','8-404-808','6020-0234','paola@email.com','Regular',TRUE,'2025-02-25');
+
+-- Verificar inserción en clientes
+SELECT COUNT(*) AS total_clientes FROM clientes;
+
+-- Insertar datos en productos
+INSERT INTO productos (nombre, codigo_barra, precio, categoria, disponible, stock, descripcion) VALUES
+('Laptop HP 15','HP15001',750.00,'Electrnica',TRUE,15,'Laptop 8GB RAM'),
+('Mouse Logitech','LOGI002',25.00,'Electrnica',TRUE,50,'Mouse inalmbrico'),
+('Teclado Mecnico','TEC003',80.00,'Electrnica',TRUE,20,'Teclado RGB'),
+('Monitor Samsung','MON004',200.00,'Electrnica',TRUE,18,'Monitor 24 pulgadas'),
+('Audfonos Sony','SON005',90.00,'Electrnica',TRUE,25,'Bluetooth'),
+('Arroz 1kg','ALI006',1.50,'Alimentos',TRUE,200,'Arroz blanco'),
+('Leche Entera','ALI007',1.20,'Alimentos',TRUE,180,'1 litro'),
+('Aceite Vegetal','ALI008',3.50,'Alimentos',TRUE,100,'500ml'),
+('Camisa Casual','ROP009',35.00,'Ropa',TRUE,40,'Hombre'),
+('Pantaln Jeans','ROP010',45.00,'Ropa',TRUE,30,'Azul'),
+('Zapatos Deportivos','ROP011',60.00,'Ropa',TRUE,25,'Running'),
+('Chaqueta','ROP012',85.00,'Ropa',TRUE,15,'Invierno'),
+('Silla Oficina','HOG013',120.00,'Hogar',TRUE,12,'Ergonmica'),
+('Mesa Comedor','HOG014',250.00,'Hogar',TRUE,8,'Madera'),
+('Lmpara LED','HOG015',30.00,'Hogar',TRUE,22,'Ahorro energa'),
+('Refrigeradora','HOG016',900.00,'Hogar',TRUE,5,'Inverter'),
+('Televisor 50"','ELE017',600.00,'Electrnica',TRUE,10,'Smart TV'),
+('Impresora Canon','ELE018',150.00,'Electrnica',TRUE,14,'Multifuncional'),
+('Microondas','HOG019',180.00,'Hogar',TRUE,9,'Digital'),
+('Caf Molido','ALI020',4.00,'Alimentos',TRUE,75,'500g');
+
+-- Verificar inserción en productos
+SELECT COUNT(*) AS total_productos FROM productos;
+
+-- Insertar datos en ventas
+INSERT INTO ventas (id_cliente, fecha, metodo_pago, pagado, total, codigo_factura) VALUES
+(1,'2025-03-01 10:00:00','Tarjeta',TRUE,775.00,'FAC001'),
+(2,'2025-03-02 11:00:00','Efectivo',TRUE,120.00,'FAC002'),
+(3,'2025-03-03 12:00:00','Transferencia',TRUE,250.00,'FAC003'),
+(4,'2025-03-04 13:00:00','Tarjeta',TRUE,45.00,'FAC004'),
+(5,'2025-03-05 14:00:00','Efectivo',TRUE,80.00,'FAC005'),
+(6,'2025-03-06 15:00:00','Tarjeta',TRUE,35.00,'FAC006'),
+(7,'2025-03-07 16:00:00','Transferencia',TRUE,120.00,'FAC007'),
+(8,'2025-03-08 17:00:00','Tarjeta',TRUE,90.00,'FAC008'),
+(9,'2025-03-09 18:00:00','Efectivo',TRUE,1.50,'FAC009'),
+(10,'2025-03-10 19:00:00','Tarjeta',TRUE,250.00,'FAC010'),
+(11,'2025-03-11 10:00:00','Tarjeta',TRUE,200.00,'FAC011'),
+(12,'2025-03-12 11:00:00','Efectivo',TRUE,60.00,'FAC012'),
+(13,'2025-03-13 12:00:00','Transferencia',TRUE,85.00,'FAC013'),
+(14,'2025-03-14 13:00:00','Tarjeta',TRUE,900.00,'FAC014'),
+(15,'2025-03-15 14:00:00','Efectivo',TRUE,600.00,'FAC015'),
+(16,'2025-03-16 15:00:00','Tarjeta',TRUE,150.00,'FAC016'),
+(17,'2025-03-17 16:00:00','Transferencia',TRUE,180.00,'FAC017'),
+(18,'2025-03-18 17:00:00','Tarjeta',TRUE,30.00,'FAC018'),
+(19,'2025-03-19 18:00:00','Efectivo',TRUE,4.00,'FAC019'),
+(20,'2025-03-20 19:00:00','Tarjeta',TRUE,60.00,'FAC020');
+
+-- Verificar inserción en ventas
+SELECT COUNT(*) AS total_ventas FROM ventas;
+
+-- Insertar datos en detalle_venta
+INSERT INTO detalle_venta (id_venta,id_producto,cantidad,precio_unitario,subtotal,aplica_descuento,tipo_descuento) VALUES
+(1,1,1,750.00,750.00,FALSE,'Ninguno'),
+(1,2,1,25.00,25.00,FALSE,'Ninguno'),
+(2,13,1,120.00,120.00,FALSE,'Ninguno'),
+(3,14,1,250.00,250.00,TRUE,'Promocin'),
+(4,10,1,45.00,45.00,FALSE,'Ninguno'),
+(5,3,1,80.00,80.00,FALSE,'Ninguno'),
+(6,9,1,35.00,35.00,FALSE,'Ninguno'),
+(7,13,1,120.00,120.00,FALSE,'Ninguno'),
+(8,5,1,90.00,90.00,FALSE,'Ninguno'),
+(9,6,1,1.50,1.50,FALSE,'Ninguno'),
+(10,14,1,250.00,250.00,FALSE,'Ninguno'),
+(11,4,1,200.00,200.00,FALSE,'Ninguno'),
+(12,11,1,60.00,60.00,FALSE,'Ninguno'),
+(13,12,1,85.00,85.00,FALSE,'Ninguno'),
+(14,16,1,900.00,900.00,FALSE,'Ninguno'),
+(15,17,1,600.00,600.00,FALSE,'Ninguno'),
+(16,18,1,150.00,150.00,FALSE,'Ninguno'),
+(17,19,1,180.00,180.00,FALSE,'Ninguno'),
+(18,15,1,30.00,30.00,FALSE,'Ninguno'),
+(19,20,1,4.00,4.00,FALSE,'Ninguno'),
+(20,11,1,60.00,60.00,FALSE,'Ninguno');
+
+-- Verificar inserción en detalle_venta
+SELECT COUNT(*) AS total_detalles FROM detalle_venta;
+
+-- Mostrar todos los datos insertados
+SELECT 'Tabla: clientes' AS '';
+SELECT * FROM clientes LIMIT 5;
+
+SELECT 'Tabla: productos' AS '';
+SELECT * FROM productos LIMIT 5;
+
+SELECT 'Tabla: ventas' AS '';
+SELECT * FROM ventas LIMIT 5;
+
+SELECT 'Tabla: detalle_venta' AS '';
+SELECT * FROM detalle_venta LIMIT 5;
+
+-- Consultas de verificación final
+SELECT 
+    (SELECT COUNT(*) FROM clientes) AS total_clientes,
+    (SELECT COUNT(*) FROM productos) AS total_productos,
+    (SELECT COUNT(*) FROM ventas) AS total_ventas,
+    (SELECT COUNT(*) FROM detalle_venta) AS total_detalles;
+
