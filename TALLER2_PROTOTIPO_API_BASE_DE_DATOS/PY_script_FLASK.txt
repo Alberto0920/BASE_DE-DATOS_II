@@ -1,0 +1,136 @@
+from flask import Flask, jsonify, request
+import mysql.connector
+
+app = Flask(__name__)
+
+# Conexion a la base de datos
+def get_db_connection():
+    conn = mysql.connector.connect(
+        host="localhost",
+        port=3307,
+        user="root",
+        password="1234",
+        database="sistema_juzgado"
+    )
+    return conn
+
+
+# Ruta principal
+@app.route("/")
+def home():
+    return jsonify({"mensaje": "API funcionando correctamente"})
+
+
+# ENDPOINT 1 - VER EXPEDIENTES
+@app.route("/expedientes", methods=["GET"])
+def obtener_expedientes():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM expedientes")
+    data = cursor.fetchall()
+
+    conn.close()
+    return jsonify(data)
+
+
+# ENDPOINT 2 - VER AGENDA
+@app.route("/agenda", methods=["GET"])
+def obtener_agenda():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM agenda")
+    data = cursor.fetchall()
+
+    conn.close()
+    return jsonify(data)
+
+
+# ENDPOINT 3 - VER ASEGURADORAS
+@app.route("/aseguradoras", methods=["GET"])
+def obtener_aseguradoras():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM aseguradoras")
+    data = cursor.fetchall()
+
+    conn.close()
+    return jsonify(data)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+# ENDPOINT 4 - CREAR EXPEDIENTE
+@app.route("/expedientes", methods=["POST"])
+def crear_expediente():
+
+    datos = request.json
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    sql = """
+    INSERT INTO expedientes (id_aseguradora, numero_expediente, descripcion, estado)
+    VALUES (%s, %s, %s, %s)
+    """
+
+    valores = (
+        datos["id_aseguradora"],
+        datos["numero_expediente"],
+        datos["descripcion"],
+        datos["estado"]
+    )
+
+    cursor.execute(sql, valores)
+    conn.commit()
+
+    conn.close()
+
+    return jsonify({"mensaje": "Expediente creado correctamente"})
+
+#ENDPOINT 5 - ACTUALIZAR EXPEDIENTE
+@app.route("/expedientes/<int:id>", methods=["PUT"])
+def actualizar_expediente(id):
+
+    datos = request.json
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    sql = """
+    UPDATE expedientes
+    SET descripcion=%s, estado=%s
+    WHERE id_expediente=%s
+    """
+
+    valores = (
+        datos["descripcion"],
+        datos["estado"],
+        id
+    )
+
+    cursor.execute(sql, valores)
+    conn.commit()
+
+    conn.close()
+
+    return jsonify({"mensaje": "Expediente actualizado"})
+
+#ENDPOINT 6 - ELIMINAR EXPEDIENTE
+@app.route("/expedientes/<int:id>", methods=["DELETE"])
+def eliminar_expediente(id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    sql = "DELETE FROM expedientes WHERE id_expediente=%s"
+
+    cursor.execute(sql, (id,))
+    conn.commit()
+
+    conn.close()
+
+    return jsonify({"mensaje": "Expediente eliminado"})

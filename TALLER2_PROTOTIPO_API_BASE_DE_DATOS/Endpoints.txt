@@ -1,0 +1,20 @@
+ Probar los endpoints
+En el navegador:
+Inicio
+http://127.0.0.1:5000
+Expedientes
+http://127.0.0.1:5000/expedientes
+Agenda
+http://127.0.0.1:5000/agenda
+Aseguradoras
+http://127.0.0.1:5000/aseguradoras
+
+Crear expediente
+POST
+http://127.0.0.1:5000/expedientes
+Actualizar expediente
+PUT
+http://127.0.0.1:5000/expedientes/1
+Eliminar expediente
+DELETE
+http://127.0.0.1:5000/expedientes/1

@@ -1,0 +1,17 @@
+Por: Gil Ortiz 
+Lecciones Aprendidas
+Durante el desarrollo del sistema de gestión de expedientes judiciales se obtuvieron diversas lecciones importantes relacionadas con el desarrollo de software, la integración de tecnologías y la administración de entornos de desarrollo.
+1. Importancia de la planificación de la arquitectura
+Uno de los principales aprendizajes fue la importancia de definir desde el inicio una arquitectura clara del sistema. En este proyecto se implementó una arquitectura basada en una API que se comunica con una base de datos relacional. Esta estructura permite separar la lógica del sistema de la capa de almacenamiento de datos, lo que facilita el mantenimiento, escalabilidad y reutilización del código.
+2. Integración entre tecnologías
+El proyecto permitió comprender cómo diferentes tecnologías pueden integrarse para construir una solución funcional. Se utilizó Python con el framework Flask para el desarrollo del backend, MySQL para la gestión de la base de datos y Docker para ejecutar el servidor de base de datos en un contenedor. Esta integración demuestra cómo herramientas modernas pueden trabajar juntas para crear aplicaciones robustas.
+3. Manejo de entornos virtuales
+Otra lección importante fue el uso de entornos virtuales para administrar las dependencias del proyecto. El uso de un entorno virtual permite aislar las librerías necesarias del proyecto y evitar conflictos con otras instalaciones de Python en el sistema.
+4. Manejo de errores y solución de problemas
+Durante el desarrollo se presentaron diversos errores relacionados con permisos, ejecución de scripts en PowerShell, instalación de paquetes y conexión a la base de datos. La resolución de estos problemas permitió comprender mejor el funcionamiento del sistema operativo, los permisos de seguridad y la configuración del entorno de desarrollo.
+5. Implementación de servicios API REST
+Se aprendió cómo diseñar y construir endpoints REST que permiten realizar operaciones CRUD (Crear, Leer, Actualizar y Eliminar) sobre los datos almacenados en la base de datos. Esto demuestra cómo una API puede servir como intermediaria entre la base de datos y posibles aplicaciones cliente, como interfaces web o aplicaciones móviles.
+6. Importancia de las pruebas del sistema
+Finalmente, se comprendió la importancia de probar cada componente del sistema de manera individual antes de integrarlo completamente. Las pruebas de los endpoints de la API permitieron verificar que las consultas a la base de datos funcionaran correctamente y que la información se devolviera en formato JSON, lo cual es estándar en aplicaciones modernas.
+Conclusión
+El desarrollo de este taller permitió adquirir conocimientos prácticos en el desarrollo de aplicaciones backend, integración de bases de datos, uso de contenedores y gestión de entornos de desarrollo. Estas habilidades son fundamentales para el desarrollo de sistemas modernos y escalables en el ámbito profesional.

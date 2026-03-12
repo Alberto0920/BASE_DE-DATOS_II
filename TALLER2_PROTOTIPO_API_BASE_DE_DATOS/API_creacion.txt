@@ -1,0 +1,99 @@
+PS C:\Users\ortig> python --version
+Python 3.14.3
+PS C:\Users\ortig> pip --version
+pip 25.3 from C:\Users\ortig\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\pip (python 3.14)
+PS C:\Users\ortig> cd C:\Users\ortig\sistema_api
+PS C:\Users\ortig\sistema_api> python -m venv venv
+PS C:\Users\ortig\sistema_api> .\venv\Scripts\activate
+.\venv\Scripts\activate : No se puede cargar el archivo
+C:\Users\ortig\sistema_api\venv\Scripts\Activate.ps1 porque la ejecución de scripts está
+deshabilitada en este sistema. Para obtener más información, consulta el tema
+about_Execution_Policies en https:/go.microsoft.com/fwlink/?LinkID=135170.
+En línea: 1 Carácter: 1
++ .\venv\Scripts\activate
++ ~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : SecurityError: (:) [], PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess
+PS C:\Users\ortig\sistema_api> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+PS C:\Users\ortig\sistema_api> cd C:\Users\ortig\sistema_api
+PS C:\Users\ortig\sistema_api> .\venv\Scripts\Activate.ps1
+(venv) PS C:\Users\ortig\sistema_api> pip install flask
+Collecting flask
+  Downloading flask-3.1.3-py3-none-any.whl.metadata (3.2 kB)
+Collecting blinker>=1.9.0 (from flask)
+  Downloading blinker-1.9.0-py3-none-any.whl.metadata (1.6 kB)
+Collecting click>=8.1.3 (from flask)
+  Downloading click-8.3.1-py3-none-any.whl.metadata (2.6 kB)
+Collecting itsdangerous>=2.2.0 (from flask)
+  Downloading itsdangerous-2.2.0-py3-none-any.whl.metadata (1.9 kB)
+Collecting jinja2>=3.1.2 (from flask)
+  Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting markupsafe>=2.1.1 (from flask)
+  Downloading markupsafe-3.0.3-cp314-cp314-win_amd64.whl.metadata (2.8 kB)
+Collecting werkzeug>=3.1.0 (from flask)
+  Downloading werkzeug-3.1.6-py3-none-any.whl.metadata (4.0 kB)
+Collecting colorama (from click>=8.1.3->flask)
+  Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+Downloading flask-3.1.3-py3-none-any.whl (103 kB)
+Downloading blinker-1.9.0-py3-none-any.whl (8.5 kB)
+Downloading click-8.3.1-py3-none-any.whl (108 kB)
+Downloading itsdangerous-2.2.0-py3-none-any.whl (16 kB)
+Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+Downloading markupsafe-3.0.3-cp314-cp314-win_amd64.whl (15 kB)
+Downloading werkzeug-3.1.6-py3-none-any.whl (225 kB)
+Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+Installing collected packages: markupsafe, itsdangerous, colorama, blinker, werkzeug, jinja2, click, flask
+Successfully installed blinker-1.9.0 click-8.3.1 colorama-0.4.6 flask-3.1.3 itsdangerous-2.2.0 jinja2-3.1.6 markupsafe-3.0.3 werkzeug-3.1.6
+
+[notice] A new release of pip is available: 25.3 -> 26.0.1
+[notice] To update, run: python.exe -m pip install --upgrade pip
+(venv) PS C:\Users\ortig\sistema_api> pip install mysql-connector-python
+Collecting mysql-connector-python
+  Downloading mysql_connector_python-9.6.0-cp314-cp314-win_amd64.whl.metadata (11 kB)
+Downloading mysql_connector_python-9.6.0-cp314-cp314-win_amd64.whl (17.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 17.0/17.0 MB 10.6 MB/s  0:00:01
+Installing collected packages: mysql-connector-python
+Successfully installed mysql-connector-python-9.6.0
+
+[notice] A new release of pip is available: 25.3 -> 26.0.1
+[notice] To update, run: python.exe -m pip install --upgrade pip
+(venv) PS C:\Users\ortig\sistema_api> pip freeze > requirements.txt
+(venv) PS C:\Users\ortig\sistema_api> New-Item app.py
+
+
+    Directorio: C:\Users\ortig\sistema_api
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----      03/11/2026  9:43 p. m.              0 app.py
+
+
+(venv) PS C:\Users\ortig\sistema_api> dir
+
+
+    Directorio: C:\Users\ortig\sistema_api
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----      03/11/2026  9:40 p. m.                venv
+-a----      03/11/2026  9:43 p. m.              0 app.py
+-a----      03/11/2026  9:43 p. m.            330 requirements.txt
+
+
+(venv) PS C:\Users\ortig\sistema_api> code .
+(venv) PS C:\Users\ortig\sistema_api> ^C
+(venv) PS C:\Users\ortig\sistema_api> cd C:\Users\ortig\sistema_api
+(venv) PS C:\Users\ortig\sistema_api> .\venv\Scripts\Activate.ps1
+(venv) PS C:\Users\ortig\sistema_api> python app.py
+ * Serving Flask app 'app'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 967-964-187
+127.0.0.1 - - [11/Mar/2026 21:51:44] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Mar/2026 21:51:44] "GET /favicon.ico HTTP/1.1" 404 -

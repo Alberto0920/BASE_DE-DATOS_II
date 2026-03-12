@@ -1,0 +1,148 @@
+docker ps
+
+docker run -d `
+--name mysql_taller `
+-e MYSQL_ROOT_PASSWORD=1234 `
+-e MYSQL_DATABASE=sistema_juzgado `
+-p 3307:3306 `
+mysql:8.0
+
+docker exec -it mysql_taller mysql -u root -p
+(PASS: 1234)
+
+USE sistema_juzgado;
+
+CREATE TABLE usuarios (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
+    usuario VARCHAR(50) UNIQUE,
+    password VARCHAR(255),
+    rol VARCHAR(50),
+    activo BOOLEAN DEFAULT TRUE
+    );
+
+CREATE TABLE aseguradoras (
+    id_aseguradora INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
+    telefono VARCHAR(20),
+    email VARCHAR(100)
+    );
+
+CREATE TABLE juzgados (
+    id_juzgado INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
+    ubicacion VARCHAR(100)
+    );
+
+CREATE TABLE expedientes (
+    id_expediente INT AUTO_INCREMENT PRIMARY KEY,
+    cliente VARCHAR(100),
+    id_aseguradora INT,
+    id_juzgado INT,
+    estado VARCHAR(20),
+    FOREIGN KEY (id_aseguradora) REFERENCES aseguradoras(id_aseguradora),
+    FOREIGN KEY (id_juzgado) REFERENCES juzgados(id_juzgado)
+    );
+
+CREATE TABLE agenda (
+id_agenda INT AUTO_INCREMENT PRIMARY KEY,
+id_expediente INT,
+fecha DATE,
+descripcion TEXT,
+FOREIGN KEY (id_expediente) REFERENCES expedientes(id_expediente)
+);
+
+
+#INGRESO DE DATOS 
+INSERT INTO usuarios(nombre,usuario,password,rol) VALUES
+('Juan Perez','juan','1234','admin'),
+('Maria Lopez','maria','1234','abogado'),
+('Carlos Mendoza','carlos','1234','abogado'),
+('Ana Torres','ana','1234','secretaria'),
+('Luis Molina','luis','1234','abogado'),
+('Katherine Kent','katherine','1234','abogado'),
+('Joel Arauz','joel','1234','abogado'),
+('Michelle Vega','michelle','1234','secretaria');.
+
+INSERT INTO aseguradoras(nombre,telefono,email) VALUES
+('ASSA','300-1000','contacto@assa.com'),
+('ANCON','300-2000','info@ancon.com'),
+('CONANCE','300-3000','contacto@conance.com'),
+('INTEROCEANICA','300-4000','info@interoceanica.com'),
+('MAPFRE','300-5000','contacto@mapfre.com'),
+('SURA','300-6000','soporte@sura.com');
+
+INSERT INTO juzgados(nombre,ubicacion) VALUES
+('Juzgado 1ro','Pedregal'),
+('Juzgado 2do','San Miguelito'),
+('Juzgado 3ro','Panama Centro'),
+('Juzgado 4to','Pedregal'),
+('Juzgado 5to','Pedregal'),
+('Juzgado Municipal','Chitre'),
+('Alcaldia de Panama','Panama');
+
+INSERT INTO expedientes(cliente,id_aseguradora,id_juzgado,estado) VALUES
+('Anthony Trejos',1,5,'pendiente'),
+('Luis Molina',2,4,'pendiente'),
+('Katherine Kent',1,5,'en_proceso'),
+('Martin Alvarado',3,1,'pendiente'),
+('Joel Arauz Rodriguez',4,3,'en_proceso'),
+('Michelle Vega',4,7,'pendiente'),
+('Candice Henry',2,6,'cerrado'),
+('Carlos Perez',5,2,'pendiente'),
+('Ana Castillo',6,3,'en_proceso'),
+('Roberto Sanchez',1,4,'cerrado'),
+('Daniel Ortega',2,1,'pendiente'),
+('Laura Moreno',3,2,'en_proceso');
+INSERT INTO agenda(id_expediente,fecha,descripcion) VALUES
+(1,'2025-03-10','Audiencia inicial'),
+(2,'2025-03-10','Entrega de documentos'),
+(3,'2025-03-11','Audiencia de conciliacion'),
+(4,'2025-03-11','Revision de expediente'),
+(5,'2025-03-12','Presentacion de pruebas'),
+(6,'2025-03-12','Audiencia preliminar'),
+(7,'2025-03-13','Cierre del caso'),
+(8,'2025-03-14','Audiencia de testigos'),
+(9,'2025-03-14','Revision legal'),
+(10,'2025-03-15','Resolucion del caso');
+
+
+PRUEBA 
+mysql> SELECT estado, COUNT(*) cantidad
+    -> FROM expedientes
+    -> GROUP BY estado;
++------------+----------+
+| estado     | cantidad |
++------------+----------+
+| pendiente  |        6 |
+| en_proceso |        4 |
+| cerrado    |        2 |
++------------+----------+
+3 rows in set (0.01 sec)
+
+mysql> SELECT
+    -> e.cliente,
+    -> a.nombre AS aseguradora,
+    -> j.nombre AS juzgado,
+    -> ag.fecha,
+    -> ag.descripcion
+    -> FROM agenda ag
+    -> JOIN expedientes e ON ag.id_expediente = e.id_expediente
+    -> JOIN aseguradoras a ON e.id_aseguradora = a.id_aseguradora
+    -> JOIN juzgados j ON e.id_juzgado = j.id_juzgado
+    -> ORDER BY ag.fecha;
++----------------------+---------------+--------------------+------------+---------------------------+
+| cliente              | aseguradora   | juzgado            | fecha      | descripcion               |
++----------------------+---------------+--------------------+------------+---------------------------+
+| Anthony Trejos       | ASSA          | Juzgado 5to        | 2025-03-10 | Audiencia inicial         |
+| Luis Molina          | ANCON         | Juzgado 4to        | 2025-03-10 | Entrega de documentos     |
+| Katherine Kent       | ASSA          | Juzgado 5to        | 2025-03-11 | Audiencia de conciliacion |
+| Martin Alvarado      | CONANCE       | Juzgado 1ro        | 2025-03-11 | Revision de expediente    |
+| Joel Arauz Rodriguez | INTEROCEANICA | Juzgado 3ro        | 2025-03-12 | Presentacion de pruebas   |
+| Michelle Vega        | INTEROCEANICA | Alcaldia de Panama | 2025-03-12 | Audiencia preliminar      |
+| Candice Henry        | ANCON         | Juzgado Municipal  | 2025-03-13 | Cierre del caso           |
+| Carlos Perez         | MAPFRE        | Juzgado 2do        | 2025-03-14 | Audiencia de testigos     |
+| Ana Castillo         | SURA          | Juzgado 3ro        | 2025-03-14 | Revision legal            |
+| Roberto Sanchez      | ASSA          | Juzgado 4to        | 2025-03-15 | Resolucion del caso       |
++----------------------+---------------+--------------------+------------+---------------------------+
+10 rows in set (0.01 sec)
