@@ -94,6 +94,7 @@ INSERT INTO expedientes(cliente,id_aseguradora,id_juzgado,estado) VALUES
 ('Roberto Sanchez',1,4,'cerrado'),
 ('Daniel Ortega',2,1,'pendiente'),
 ('Laura Moreno',3,2,'en_proceso');
+
 INSERT INTO agenda(id_expediente,fecha,descripcion) VALUES
 (1,'2025-03-10','Audiencia inicial'),
 (2,'2025-03-10','Entrega de documentos'),
