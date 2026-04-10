@@ -3,7 +3,7 @@ import mysql.connector
 
 app = Flask(__name__)
 
-# CONEXION A LA BASE DE DATOS
+# ===== CONEXION =====
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
@@ -13,12 +13,12 @@ def get_db_connection():
         database="sistema_juzgado"
     )
 
-# RUTA PRINCIPAL
+# ===== HOME =====
 @app.route("/")
 def home():
     return jsonify({"mensaje": "API funcionando correctamente"})
 
-# ====== READ (GET) =======
+# ===== READ =====
 
 @app.route("/expedientes", methods=["GET"])
 def obtener_expedientes():
@@ -31,6 +31,7 @@ def obtener_expedientes():
     conn.close()
     return jsonify(data)
 
+
 @app.route("/agenda", methods=["GET"])
 def obtener_agenda():
     conn = get_db_connection()
@@ -41,6 +42,7 @@ def obtener_agenda():
 
     conn.close()
     return jsonify(data)
+
 
 @app.route("/aseguradoras", methods=["GET"])
 def obtener_aseguradoras():
@@ -53,7 +55,8 @@ def obtener_aseguradoras():
     conn.close()
     return jsonify(data)
 
-# ===== CREATE (POST) =====
+
+# ===== CREATE =====
 
 @app.route("/expedientes", methods=["POST"])
 def crear_expediente():
@@ -63,7 +66,8 @@ def crear_expediente():
     cursor = conn.cursor()
 
     sql = """
-    INSERT INTO expedientes (id_aseguradora, numero_expediente, descripcion, estado)
+    INSERT INTO expedientes 
+    (id_aseguradora, numero_expediente, descripcion, estado)
     VALUES (%s, %s, %s, %s)
     """
 
@@ -76,12 +80,12 @@ def crear_expediente():
 
     cursor.execute(sql, valores)
     conn.commit()
-
     conn.close()
 
     return jsonify({"mensaje": "Expediente creado correctamente"})
 
-# ===== UPDATE (PUT) ======
+
+# ===== UPDATE =====
 
 @app.route("/expedientes/<int:id>", methods=["PUT"])
 def actualizar_expediente(id):
@@ -104,12 +108,12 @@ def actualizar_expediente(id):
 
     cursor.execute(sql, valores)
     conn.commit()
-
     conn.close()
 
     return jsonify({"mensaje": "Expediente actualizado correctamente"})
 
-# ===== DELETE ============
+
+# ===== DELETE =====
 
 @app.route("/expedientes/<int:id>", methods=["DELETE"])
 def eliminar_expediente(id):
@@ -117,15 +121,14 @@ def eliminar_expediente(id):
     cursor = conn.cursor()
 
     sql = "DELETE FROM expedientes WHERE id_expediente=%s"
-
     cursor.execute(sql, (id,))
-    conn.commit()
 
+    conn.commit()
     conn.close()
 
     return jsonify({"mensaje": "Expediente eliminado correctamente"})
 
-# ===== RUN SERVER ========
 
+# ===== RUN =====
 if __name__ == "__main__":
     app.run(debug=True)
